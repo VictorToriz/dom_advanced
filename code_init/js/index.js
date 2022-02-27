@@ -1,117 +1,102 @@
-// ITERATION 1
+function actualizaSubtotal(producto){
+  const priceUnit = producto.querySelector('.pu span').textContent;
+  const quantity = producto.querySelector('.qty input').value;
 
-function updateSubtotal(product) {
+  let subTotal = parseFloat(priceUnit) * parseFloat(quantity);
 
-  console.log('Calculating subtotal, yey!');
-  const price = product.querySelector(`.pu span`).innerHTML;
+  const txt_sub = producto.querySelector('.subtot span');
+  txt_sub.innerHTML = subTotal;
+
+  return subTotal;
+
+} //ActualizaSubtotal
+
+function calculaTotal(){
+  // const products = document.getElementsByClassName('product');
+  const products = document.querySelectorAll('.product');
   
-  const quantity = product.querySelector(`.qty input`).value;
-  
-  const subtotal = product.querySelector(`.subtot span`)
-  
-  const total = parseFloat(price).toFixed(2) * parseFloat(quantity)
-  
-  subtotal.innerHTML = total;
-  console.log(total)
-  return total
+  let sumSubs = 0;
+
+  for (let index = 0; index < products.length; index++) {
+      const producto = products[index];
+     sumSubs += actualizaSubtotal(producto);
   }
-  
-    // ITERATION 2
-  
-  function calculateAll(product) {
-    const elementProduct = document.getElementsByClassName(`product`)
-    //console.log(elementProduct)
 
-    let totalTotal = 0;
+  const total = document.querySelector('#total-value span');
+  total.innerHTML = parseFloat(sumSubs);
 
-  //    for (const elem of elementProduct){
-  //      console.log(elem)
-  //      totalTotal = totalTotal + updateSubtotal(elem) 
-  //  } 
-  //  for(let i = 0 ; i<= elementProduct.length ; i++){
-
-  //    totalTotal = totalTotal + updateSubtotal(elementProduct[i])
-  // }
-   const products = document.querySelectorAll('.product');
-
-   products.forEach(function(product) {
-     totalTotal += updateSubtotal(product);
- });
-
-    // ITERATION 3
-    let grandTotal = document.querySelector(`#total-value span`).innerHTML;
-    
-    const collection = document.querySelectorAll(`.product`);
-  
-    let totalArr = Array.from(collection)
-  
-    totalArr = totalArr.reduce(function (acc,product) { 
-      return acc += updateSubtotal(product)}, 0);
-    console.log(totalArr);
-
-    grandTotal = Number(totalArr).toFixed(2);
-
-    return grandTotal;
-    }
-    
-    
-  
-  // ITERATION 4
+} //CalculaTotal
 
 
-  function removeProduct(event) {
- 
-   const target = event.currentTarget;
-    console.log('The target in remove is:', target.parentNode.parentNode);       
-    
-    target.parentNode.parentNode.remove();
-    calculateAll();
-  }
-  
-  // ITERATION 5
-  
-  function createProduct() {
-    const mainProductsTable = document.querySelector(`tbody`);
-    const newProductName = document.querySelector(`input[placeholder= "Product Name"]`);
-    const newProductPrice = document.querySelector(`input[placeholder="Product Price"]`);
-  
-    //console.log({mainProductsTable, newProductName, newProductPrice});
-  
-    const newProductItem = document.createElement(`tr`);
-    newProductItem.innerHTML = `
-    <tr class="product">
-            <td class="name">
-              <span>${newProductName.value}</span>
-            </td>
-            <td class="pu">$<span>${newProductPrice.value}</span></td>
-            <td class="qty">
-              <input type="number" value="0" min="0" placeholder="Quantity" />
-            </td>
-            <td class="subtot">$<span>0</span></td>
-            <td class="action">
-              <button class="btn btn-delete">Delete</button>
-            </td>
-          </tr>
-    `;
-    newProductItem.classList.add('product');
-    mainProductsTable.appendChild(newProductItem);
-  
-    newProductItem.querySelector(`.btn-remove`).addEventListener(`click`, removeProduct);
-  }
-  
-  window.addEventListener('load', () => {
+function crearProducto(){
+  const newProduct = document.querySelector('.new');
+  const name = newProduct.querySelector('#newName').value;
+  const pu = parseFloat(newProduct.querySelector('#newPu').value);
 
-    const calculatePricesBtn = document.getElementById('calc');
+  console.dir(newProduct.querySelector('#newName'));
 
-    calculatePricesBtn.addEventListener('click', calculateAll);
-  
-    const removeButton = document.querySelectorAll(`.btn-delete`);
-    
-    removeButton.forEach(button => {
+  const ancla = document.querySelector('#cart tbody');
+  const temp = document.createElement('tr');
+  temp.classList.add('product');
+
+  temp.innerHTML += `
+              <td class="name">
+                  <span>${name.toUpperCase()}</span>
+              </td>
       
-      button.addEventListener(`click`, removeProduct)
-    });
+              <td class="pu">
+                  $<span>${pu}</span>
+              </td>
+      
+              <td class="qty">
+                  <label>
+                      <input type="number" value="0" min="0">
+                  </label>
+              </td>
+      
+              <td class="subtot">
+                  $<span>0</span>
+              </td>
+      
+              <td class="rm">
+                  <button class="btn btn-delete">Borrar</button>
+              </td>`
+
+
+  ancla.appendChild(temp);
+  actualizarBotones();
+
+}//Crear producto
+
+function actualizarBotones(){
   
-    const createButton = document.getElementById(`create`);
-    createButton.addEventListener(`click`, createProduct);
+//botones Delete
+const btnsDelete = document.querySelectorAll('.btn-delete');
+
+btnsDelete.forEach( function(button){
+  button.addEventListener('click',function(e){
+      const target = e.currentTarget
+      target.parentNode.parentNode.remove();
   });
+}); //btnsDelete
+//
+}
+
+
+actualizarBotones();
+
+//boton Calcular
+const btnCalc = document.getElementById('calc');
+
+btnCalc.addEventListener('click',function(){
+  calculaTotal();
+}); //btnCalculatePrices
+//
+
+//Boton Crear
+const btnCreate = document.getElementById('create');
+
+btnCreate.addEventListener('click',function(){
+  crearProducto(); 
+});
+//
